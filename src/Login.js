@@ -1,8 +1,14 @@
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { auth } from "./firebase";
 import "./Login.css";
 
 function Login() {
+  const history = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -10,11 +16,26 @@ function Login() {
     e.preventDefault();
 
     // do some fancy firebase login shiiittttt
+    signInWithEmailAndPassword(auth, email, password)
+      .then((auth) => {
+        history("/");
+      })
+      .catch((error) => alert(error.message));
   };
 
   const register = (e) => {
     e.preventDefault();
     // do some fancy firebase register shiiittttt
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((auth) => {
+        // successfully created an new user with email and password
+        console.log(auth);
+        if (auth) {
+          history("/");
+        }
+      })
+      .catch((error) => alert(error.message));
   };
   return (
     <div className="login">
@@ -39,7 +60,7 @@ function Login() {
           <input
             type="password"
             value={password}
-            onChange={(e) => e.target.value}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <button
             className="login__signInButton"
